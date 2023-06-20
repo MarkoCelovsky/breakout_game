@@ -6,6 +6,17 @@ from ball import Ball
 from brick import Brick
 
 pygame.init()
+pygame.mixer.init()
+pygame.mixer.music.load('music.mp3')
+pygame.mixer.music.play()
+
+
+def play_music():
+   if pygame.mixer.music.get_busy():
+        pygame.mixer.music.pause()
+   else:
+        pygame.mixer.music.unpause()
+
 
 def read_attempts():
     try:
@@ -38,7 +49,7 @@ def draw_button(screen, text, x, y, width, height, color, font):
     text_rect = text_surface.get_rect(center=(x + width // 2, y + height // 2))
     screen.blit(text_surface, text_rect)
     return button
-
+   
 def handle_buttons(screen):
     button_font = pygame.font.Font(None, 36)
     play_again_button = draw_button(screen, "Play Again", 100, 400, 200, 50, (0, 128, 0), button_font)
@@ -85,6 +96,7 @@ lives = 3
 size = (800, 600)
 screen = pygame.display.set_mode(size)
 pygame.display.set_caption("Breakout Game")
+
 
 #This will be a list that will contain all the sprites we intend to use in our game.
 all_sprites_list = pygame.sprite.Group()
@@ -148,6 +160,10 @@ while carryOn:
     for event in pygame.event.get(): # User did something
         if event.type == pygame.QUIT: # If user clicked close
               carryOn = False # Flag that we are done so we exit this loop
+        if event.type == pygame.MOUSEBUTTONDOWN:
+                mouse_pos = event.pos
+                if music_button.collidepoint(mouse_pos):
+                    play_music()
 
     #Moving the paddle when the use uses the arrow keys
     keys = pygame.key.get_pressed()
@@ -315,12 +331,16 @@ while carryOn:
     screen.fill(DARKBLUE)
     pygame.draw.line(screen, WHITE, [0, 38], [800, 38], 2)
 
-    #Display the score and the number of lives at the top of the screen
+    # Display the score and the number of lives at the top of the screen 
     font = pygame.font.Font(None, 34)
     text = font.render("Score: " + str(score), 1, WHITE)
     screen.blit(text, (20,10))
     text = font.render("Lives: " + str(lives), 1, WHITE)
     screen.blit(text, (650,10))
+    button_font = pygame.font.Font(None, 22)
+    music_button = draw_button(screen, "Play Music", 350, 5, 100, 40, (0, 128, 0), button_font)
+    
+
 
     #Now let's draw all the sprites in one go. (For now we only have 2 sprites!)
     all_sprites_list.draw(screen)
